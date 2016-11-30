@@ -82,20 +82,6 @@
 
 (use-package emojify)
 
-(use-package slack
-  :commands (slack-start)
-  :init
-  (setq slack-buffer-emojify t) ;; if you want to enable emoji, default nil
-  (setq slack-prefer-current-team t)
-  :config
-  (slack-register-team
-   :name "cotiviti"
-   :default t
-   :client-id "2539652364.95346683441"
-   :client-secret "95d1a7ff7c357724a9d9ca7a13cc46a9"
-   :token "xoxp-2539652364-80555682567-95334756288-fdc1df9670ef28c1fc75925a32f1a96e"
-   :subscribed-channels '()))
-
 (require 'helm)
 (require 'helm-config)
 (use-package helm-projectile)
