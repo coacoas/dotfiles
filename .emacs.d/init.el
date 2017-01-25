@@ -41,11 +41,27 @@
 (global-set-key (kbd "C-c /") 'comment-region)
 (global-set-key (kbd "C-c M-/") 'uncomment-region)
 
+(use-package magit
+  :commands magit-status magit-blame
+  :bind (("C-x g" . magit-status)))
+
+(use-package magithub
+  :config (magithub-feature-autoinject t)
+  :after magit)
+
+(use-package magit-gitflow
+  :after magit)
+
+(use-package helm)
 
 ;; themes
+(use-package engine-mode)
 (use-package solarized-theme)
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 (load-theme 'solarized-dark t)
+
+(global-set-key (kbd "C-c C-t l") '(lambda () (interactive) (load-theme 'solarized-light)))
+(global-set-key (kbd "C-c C-t d") '(lambda () (interactive) (load-theme 'solarized-dark)))
 
 (add-to-list 'exec-path "/Users/bcarlson/.sdkman/candidates/scala/current/bin")
 (add-to-list 'exec-path "/Users/bcarlson/.sdkman/candidates/sbt/current/bin")
@@ -82,9 +98,12 @@
 
 (use-package emojify)
 
-(require 'helm)
+(use-package helm)
 (require 'helm-config)
-(use-package helm-projectile)
+
+(use-package helm-projectile
+  :after helm)
+
 (setq projectile-completion-system 'helm)
 (helm-projectile-on)
 
@@ -102,7 +121,7 @@
 (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB work in terminal
 (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
 
-(setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
+(setq helm-split-window-in-side-p         nil ; open helm buffer inside current window, not occupy whole other window
       helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
       helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
       helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
@@ -118,16 +137,17 @@
 
 (helm-mode 1)
 
-
-;; (use-package jdee)
 (use-package mvn)
 
 (use-package ensime 
+  :after helm
   :ensure t
-  :pin melpa-stable)
+  :pin melpa-stable
+  :bind (("C-c C-b b" . compile)))
 (setq ensime-use-helm t)
 
-(use-package helm-swoop)
+(use-package helm-swoop
+  :after helm)
 ;; Change the keybinds to whatever you like :)
 (global-set-key (kbd "M-i") 'helm-swoop)
 (global-set-key (kbd "M-I") 'helm-swoop-back-to-last-point)
@@ -158,17 +178,6 @@
    'minibuffer-complete-word
    'self-insert-command
    minibuffer-local-completion-map))
-
-(use-package magit
-  :commands magit-status magit-blame
-  :init (setq
-         magit-revert-buffers nil)
-  :bind (("C-x g" . magit-status)))
-
-(use-package magithub
-  :after magit)
-
-(use-package magit-gitflow)
 
 (use-package projectile
   :demand
@@ -205,7 +214,6 @@
   (global-set-key [kp-delete] 'delete-char) ;; sets fn-delete to be right-delete
   )
 
-
 (use-package smartparens
   :diminish smartparens-mode
   :commands
@@ -241,8 +249,6 @@
                                      (tabify (point-min) (point-max))
                                    (untabify (point-min) (point-max)))))))
 
-
-
 (use-package alchemist)
 
 (defcustom
@@ -262,7 +268,7 @@
   "Hungry whitespace or delete word depending on context."
   (interactive)
   (if (looking-back "[[:space:]\n]\\{2,\\}" (- (point) 2))
-       (while (looking-back "[[:space:]\n]" (- (point) 1))
+      (while (looking-back "[[:space:]\n]" (- (point) 1))
         (delete-char -1))
     (cond
      ((and (boundp 'smartparens-strict-mode)
@@ -286,8 +292,8 @@
   (newline-and-indent)
   (scala-indent:insert-asterisk-on-multiline-comment))
 
-(add-hook 'sgml-mode-hook 'emmet-mode) ;; Auto-start on any markup modes
-(add-hook 'css-mode-hook  'emmet-mode) ;; enable Emmet's css abbreviation.
+(add-hook 'sgml-mode-hook (emmet-mode))
+(add-hook 'css-mode-hook (emmet-mode))
 
 (add-hook 'scala-mode-hook
           (lambda ()
@@ -297,7 +303,6 @@
             (yas-minor-mode)
             (setq prettify-symbols-alist scala-prettify-symbols-alist)
             (prettify-symbols-mode)
-;            (company-mode)
             (scala-mode:goto-start-of-code)))
 
 (add-hook 'java-mode-hook
@@ -318,8 +323,7 @@
 
 (defun colorize-compilation (one two)
   "ansi colorize the compilation buffer."
-  (ansi-compilation-mode)
- )
+  (ansi-compilation-mode))
 
 (setq compilation-finish-function 'colorize-compilation)
 
@@ -375,7 +379,7 @@
     ("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" default)))
  '(package-selected-packages
    (quote
-    (helm-swoop helm-projectile alchemist editorconfig helm-config magithub mvn emacs-websocket multi-term MultiTerm magit-gitflow magit-flow flymd markdown multiple-cursors solarized-theme use-package undo-tree smartparens projectile popup-imenu magit highlight-symbol helm goto-chg ensime emmet-mode))))
+    (which-key engine-mode helm-swoop helm-projectile alchemist editorconfig helm-config magithub mvn emacs-websocket multi-term MultiTerm magit-gitflow magit-flow flymd markdown multiple-cursors solarized-theme use-package undo-tree smartparens projectile popup-imenu magit highlight-symbol helm goto-chg ensime emmet-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
