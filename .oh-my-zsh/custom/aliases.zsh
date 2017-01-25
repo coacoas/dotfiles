@@ -1,6 +1,7 @@
 export LANG='en_US.UTF-8'
 export LC_ALL="en_US.UTF-8"
 export MAVEN_OPTS="-Djava.awt.headless=true"
+export JAVA_TOOL_OPTIONS="-Dhazelcast.phone.home.enabled=false"
 
 ## Directory listing 
 alias lh='ls -alhF'
