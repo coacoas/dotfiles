@@ -1,4 +1,11 @@
 ;; global variables
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
 (setq
  inhibit-startup-screen t
  create-lockfiles nil
@@ -14,6 +21,9 @@
  indent-tabs-mode nil
  tab-width 4
  c-basic-offset 4)
+
+;; Local load paths
+(add-to-list 'load-path "~/.emacs.d/local/")
 
 ;; font settings
 (set-face-attribute 'default nil :font "Source Code Pro") 
@@ -142,8 +152,8 @@
 (use-package ensime 
   :after helm
   :ensure t
-  :pin melpa-stable
-  :bind (("C-c C-b b" . compile)))
+  :pin melpa-stable)
+
 (setq ensime-use-helm t)
 
 (use-package helm-swoop
@@ -164,10 +174,10 @@
 (define-key helm-swoop-map (kbd "M-m") 'helm-multi-swoop-current-mode-from-helm-swoop)
 
 
+(require 'ensime-mvn)
 
 (use-package scala-mode
-  :interpreter
-  ("scala" . scala-mode))
+  :interpreter ("scala" . scala-mode))
 
 (use-package sbt-mode
   :commands sbt-start sbt-command
@@ -198,6 +208,9 @@
   ;; and C-<space> C-<space> / C-u C-<space>
   :bind (("C-." . goto-last-change)
          ("C-," . goto-last-change-reverse)))
+
+(use-package which-key
+  :config (which-key-mode))
 
 (use-package popup-imenu
   :commands popup-imenu
@@ -292,6 +305,13 @@
   (newline-and-indent)
   (scala-indent:insert-asterisk-on-multiline-comment))
 
+(defun bind-ensime-mvn-keys () 
+  "Bind keys for building with ensime-mvn"
+  (interactive)
+  (bind-key "C-c C-b c" 'ensime-mvn-compile)
+  (bind-key "C-c C-b t" 'ensime-mvn-test)
+  (bind-key "C-c C-b b" 'ensime-mvn-verify))
+
 (add-hook 'sgml-mode-hook (emmet-mode))
 (add-hook 'css-mode-hook (emmet-mode))
 
@@ -303,14 +323,17 @@
             (yas-minor-mode)
             (setq prettify-symbols-alist scala-prettify-symbols-alist)
             (prettify-symbols-mode)
+            (bind-ensime-mvn-keys)
             (scala-mode:goto-start-of-code)))
 
 (add-hook 'java-mode-hook
           (lambda () 
-            (ensime)))
+            (ensime)
+            (bind-ensime-mvn-keys)))
 
 (add-hook 'heml-mode-hook
           (lambda ()
+            (bind-ensime-mvn-keys)
             (emmet-mode)))
 
 
