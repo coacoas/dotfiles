@@ -51,6 +51,8 @@
 (global-set-key (kbd "C-c /") 'comment-region)
 (global-set-key (kbd "C-c M-/") 'uncomment-region)
 
+(use-package parinfer)
+
 (use-package magit
   :commands magit-status magit-blame
   :bind (("C-x g" . magit-status)))
@@ -439,7 +441,7 @@
  '(global-linum-mode t)
  '(package-selected-packages
    (quote
-    (base16-theme dracula-theme monokai-theme arjen-grey-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-tomorrow-black zenburn-theme rebecca-theme flymake-jslint flycheck js2-mode json-mode web-mode eslint-fix which-key engine-mode helm-swoop helm-projectile alchemist editorconfig helm-config magithub mvn emacs-websocket multi-term MultiTerm magit-gitflow magit-flow flymd markdown multiple-cursors solarized-theme use-package undo-tree smartparens projectile popup-imenu magit highlight-symbol helm goto-chg ensime emmet-mode))))
+    (base16-theme dracula-theme monokai-theme arjen-grey-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-tomorrow-black zenburn-theme rebecca-theme flymake-jslint flycheck js2-mode json-mode web-mode eslint-fix parinfer which-key engine-mode helm-swoop helm-projectile alchemist editorconfig helm-config magithub mvn emacs-websocket multi-term MultiTerm magit-gitflow magit-flow flymd markdown multiple-cursors solarized-theme use-package undo-tree smartparens projectile popup-imenu magit highlight-symbol helm goto-chg ensime emmet-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
