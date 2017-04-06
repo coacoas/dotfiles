@@ -60,15 +60,31 @@
   :after magit)
 
 (use-package magit-gitflow
-  :after magit)
+  :after magit
+  :init (add-hook 'magit-mode-hook 'turn-on-magit-gitflow))
 
 (use-package helm)
+
+(use-package dash)
+
+(defun remove-all 
+    (remove-list initial-list)
+  "Remove all elements in remove-list from initial-list"
+  (--reduce-from (remove it acc) initial-list remove-list)) 
+    
 
 ;; themes
 (use-package engine-mode)
 (use-package solarized-theme)
+(use-package rebecca-theme)
+(use-package zenburn-theme)
+
+(use-package arjen-grey-theme)
+(use-package monokai-theme)
+(use-package dracula-theme)
+(use-package base16-theme)
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-(load-theme 'solarized-dark t)
+(load-theme 'base16-tomorrow-night t)
 
 (global-set-key (kbd "C-c C-t l") '(lambda () (interactive) (load-theme 'solarized-light)))
 (global-set-key (kbd "C-c C-t d") '(lambda () (interactive) (load-theme 'solarized-dark)))
@@ -175,9 +191,19 @@
 
 
 (require 'ensime-mvn)
+(setq ensime-mvn-regen-task "'org.ensime.maven.plugins:ensime-maven:0.0.5:generate' -U")
+(setq ensime-mvn-verify-task "clean verify -e -U")
+(setq ensime-mvn-test-task "scoverage:report")
+
+(defun ensime-mvn-scoverage
+    (interactive)
+  "Run scoverage test coverage"
+  (ensime-mvn "clean scoverage:report"))
+
 
 (use-package scala-mode
-  :interpreter ("scala" . scala-mode))
+  :interpreter ("scala" . scala-mode)
+  :bind ("C-c C-b t" . ensime-mvn-test))
 
 (use-package sbt-mode
   :commands sbt-start sbt-command
@@ -217,6 +243,12 @@
   :bind ("M-i" . popup-imenu))
 
 (use-package emmet-mode)
+
+(use-package flymake)
+(use-package flymake-jslint)
+(use-package web-mode)
+(use-package js2-mode)
+(use-package json-mode)
 
 (bind-key "C-x C-g" 'goto-line)
 
@@ -308,9 +340,11 @@
 (defun bind-ensime-mvn-keys () 
   "Bind keys for building with ensime-mvn"
   (interactive)
-  (bind-key "C-c C-b c" 'ensime-mvn-compile)
-  (bind-key "C-c C-b t" 'ensime-mvn-test)
-  (bind-key "C-c C-b b" 'ensime-mvn-verify))
+  (unbind-key "C-c C-b c")
+  (unbind-key "C-c C-b t")
+  (bind-key "C-c C-m c" 'ensime-mvn-compile)
+  (bind-key "C-c C-m t" 'ensime-mvn-test)
+  (bind-key "C-c C-m b" 'ensime-mvn-verify))
 
 (add-hook 'sgml-mode-hook (emmet-mode))
 (add-hook 'css-mode-hook (emmet-mode))
@@ -321,7 +355,9 @@
             (show-paren-mode)
             (smartparens-mode)
             (yas-minor-mode)
-            (setq prettify-symbols-alist scala-prettify-symbols-alist)
+            (setq prettify-symbols-alist 
+                  (remove-all '("bind" "flatMap") 
+                              scala-prettify-symbols-alist))
             (prettify-symbols-mode)
             (bind-ensime-mvn-keys)
             (scala-mode:goto-start-of-code)))
@@ -399,10 +435,11 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" default)))
+    ("3380a2766cf0590d50d6366c5a91e976bdc3c413df963a0ab9952314b4577299" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "db2ecce0600e3a5453532a89fc19b139664b4a3e7cbefce3aaf42b6d9b1d6214" "d431bff071bfc4c300767f2a0b29b23c7994573f7c6b5ef4c77ed680e6f44dd0" "d9129a8d924c4254607b5ded46350d68cc00b6e38c39fc137c3cfb7506702c12" "f5512c02e0a6887e987a816918b7a684d558716262ac7ee2dd0437ab913eaec6" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" default)))
+ '(global-linum-mode t)
  '(package-selected-packages
    (quote
-    (which-key engine-mode helm-swoop helm-projectile alchemist editorconfig helm-config magithub mvn emacs-websocket multi-term MultiTerm magit-gitflow magit-flow flymd markdown multiple-cursors solarized-theme use-package undo-tree smartparens projectile popup-imenu magit highlight-symbol helm goto-chg ensime emmet-mode))))
+    (base16-theme dracula-theme monokai-theme arjen-grey-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-tomorrow-black zenburn-theme rebecca-theme flymake-jslint flycheck js2-mode json-mode web-mode eslint-fix which-key engine-mode helm-swoop helm-projectile alchemist editorconfig helm-config magithub mvn emacs-websocket multi-term MultiTerm magit-gitflow magit-flow flymd markdown multiple-cursors solarized-theme use-package undo-tree smartparens projectile popup-imenu magit highlight-symbol helm goto-chg ensime emmet-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
