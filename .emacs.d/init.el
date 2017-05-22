@@ -105,6 +105,9 @@
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
+(use-package express
+  :config (express-install-aliases))
+
 (use-package undo-tree
   :diminish undo-tree-mode
   :config (global-undo-tree-mode)
@@ -138,9 +141,10 @@
 ;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
 ;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
 ;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
-(global-set-key (kbd "M-x") 'undefined)
-(global-set-key (kbd "M-x") 'helm-M-x)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
+(unbind-key "M-x")
+(bind-key "M-x" 'helm-M-x)
+(bind-key "C-x C-f" 'helm-find-files)
+(bind-key "C-x b" 'helm-mini)
 
 (global-set-key (kbd "C-c h") 'helm-command-prefix)
 (global-unset-key (kbd "C-x c"))
@@ -195,17 +199,16 @@
 (require 'ensime-mvn)
 (setq ensime-mvn-regen-task "'org.ensime.maven.plugins:ensime-maven:0.0.5:generate' -U")
 (setq ensime-mvn-verify-task "clean verify -e -U")
-(setq ensime-mvn-test-task "scoverage:report")
+(setq ensime-mvn-test-task "compile scoverage:report scoverage:check-only -U")
 
 (defun ensime-mvn-scoverage
     (interactive)
   "Run scoverage test coverage"
-  (ensime-mvn "clean scoverage:report"))
-
+  (ensime-mvn "clean scoverage:report scoverage:check-only -U"))
 
 (use-package scala-mode
   :interpreter ("scala" . scala-mode)
-  :bind ("C-c C-b t" . ensime-mvn-test))
+  :bind (("C-c RET p" . ensime-mvn-test-package)))
 
 (use-package sbt-mode
   :commands sbt-start sbt-command
@@ -245,6 +248,12 @@
   :bind ("M-i" . popup-imenu))
 
 (use-package emmet-mode)
+
+(use-package groovy-mode)
+(use-package gradle-mode
+  :config 
+  (setq gradle-use-gradlew t
+        gradle-gradlew-executable "./gradlew"))
 
 (use-package flymake)
 (use-package flymake-jslint)
@@ -298,6 +307,9 @@
 
 (use-package alchemist)
 
+(use-package git-gutter-fringe
+  :config (global-git-gutter-mode))
+
 (defcustom
   scala-mode-prettify-symbols
   '(("->" . ?→)
@@ -346,6 +358,7 @@
   (unbind-key "C-c C-b t")
   (bind-key "C-c C-m c" 'ensime-mvn-compile)
   (bind-key "C-c C-m t" 'ensime-mvn-test)
+  (bind-key "C-c C-m r" 'ensime-mvn-refresh)
   (bind-key "C-c C-m b" 'ensime-mvn-verify))
 
 (add-hook 'sgml-mode-hook (emmet-mode))
@@ -429,7 +442,6 @@
 (setq compilation-save-buffers-predicate '(lambda () nil))
 
 (add-hook 'shell-mode-hook 'compilation-shell-minor-mode)
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -437,11 +449,11 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("3380a2766cf0590d50d6366c5a91e976bdc3c413df963a0ab9952314b4577299" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "db2ecce0600e3a5453532a89fc19b139664b4a3e7cbefce3aaf42b6d9b1d6214" "d431bff071bfc4c300767f2a0b29b23c7994573f7c6b5ef4c77ed680e6f44dd0" "d9129a8d924c4254607b5ded46350d68cc00b6e38c39fc137c3cfb7506702c12" "f5512c02e0a6887e987a816918b7a684d558716262ac7ee2dd0437ab913eaec6" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" default)))
+    ("3380a2766cf0590d50d6366c5a91e976bdc3c413df963a0ab9952314b4577299" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "9955cc54cc64d6c051616dce7050c1ba34efc2b0613d89a70a68328f34e22c8f" "7bef2d39bac784626f1635bd83693fae091f04ccac6b362e0405abf16a32230c" default)))
  '(global-linum-mode t)
  '(package-selected-packages
    (quote
-    (base16-theme dracula-theme monokai-theme arjen-grey-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-tomorrow-black zenburn-theme rebecca-theme flymake-jslint flycheck js2-mode json-mode web-mode eslint-fix parinfer which-key engine-mode helm-swoop helm-projectile alchemist editorconfig helm-config magithub mvn emacs-websocket multi-term MultiTerm magit-gitflow magit-flow flymd markdown multiple-cursors solarized-theme use-package undo-tree smartparens projectile popup-imenu magit highlight-symbol helm goto-chg ensime emmet-mode))))
+    (git-gutter-fringe buffer-move zoom-frm elisp-format express Alert alert growl fancy-narrow fancy-battery gradle-mode gradle groovy-mode groovy zenburn-theme which-key web-mode use-package undo-tree solarized-theme smartparens rebecca-theme popup-imenu parinfer mvn multiple-cursors monokai-theme magithub magit-gitflow json-mode js2-mode highlight-symbol helm-swoop helm-projectile goto-chg flymake-jslint flycheck eslint-fix ensime engine-mode emojify emmet-mode editorconfig dracula-theme color-theme-sanityinc-tomorrow base16-theme arjen-grey-theme alchemist))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
