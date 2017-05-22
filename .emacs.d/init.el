@@ -308,7 +308,9 @@
 (use-package alchemist)
 
 (use-package git-gutter-fringe
-  :config (global-git-gutter-mode))
+  :config 
+  (global-git-gutter-mode)
+  (setq git-gutter-fr:side 'right-fringe))
 
 (defcustom
   scala-mode-prettify-symbols
@@ -453,7 +455,7 @@
  '(global-linum-mode t)
  '(package-selected-packages
    (quote
-    (git-gutter-fringe buffer-move zoom-frm elisp-format express Alert alert growl fancy-narrow fancy-battery gradle-mode gradle groovy-mode groovy zenburn-theme which-key web-mode use-package undo-tree solarized-theme smartparens rebecca-theme popup-imenu parinfer mvn multiple-cursors monokai-theme magithub magit-gitflow json-mode js2-mode highlight-symbol helm-swoop helm-projectile goto-chg flymake-jslint flycheck eslint-fix ensime engine-mode emojify emmet-mode editorconfig dracula-theme color-theme-sanityinc-tomorrow base16-theme arjen-grey-theme alchemist))))
+    (quickrun git-gutter-fringe buffer-move zoom-frm elisp-format express Alert alert growl fancy-narrow fancy-battery gradle-mode gradle groovy-mode groovy zenburn-theme which-key web-mode use-package undo-tree solarized-theme smartparens rebecca-theme popup-imenu parinfer mvn multiple-cursors monokai-theme magithub magit-gitflow json-mode js2-mode highlight-symbol helm-swoop helm-projectile goto-chg flymake-jslint flycheck eslint-fix ensime engine-mode emojify emmet-mode editorconfig dracula-theme color-theme-sanityinc-tomorrow base16-theme arjen-grey-theme alchemist))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
