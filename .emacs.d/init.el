@@ -53,14 +53,15 @@
 
 (use-package parinfer)
 
+(use-package ox-reveal)
+(use-package ox-twbs)
+
 (use-package magit
   :commands magit-status magit-blame
   :bind (("C-x g" . magit-status)))
-
 (use-package magithub
   :config (magithub-feature-autoinject t)
   :after magit)
-
 (use-package magit-gitflow
   :after magit
   :init (add-hook 'magit-mode-hook 'turn-on-magit-gitflow))
@@ -87,9 +88,6 @@
 (use-package base16-theme)
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 (load-theme 'base16-tomorrow-night t)
-
-(global-set-key (kbd "C-c C-t l") '(lambda () (interactive) (load-theme 'solarized-light)))
-(global-set-key (kbd "C-c C-t d") '(lambda () (interactive) (load-theme 'solarized-dark)))
 
 (add-to-list 'exec-path "/Users/bcarlson/.sdkman/candidates/scala/current/bin")
 (add-to-list 'exec-path "/Users/bcarlson/.sdkman/candidates/sbt/current/bin")
@@ -364,6 +362,8 @@
   (bind-key "C-c C-m b" 'ensime-mvn-verify))
 
 (add-hook 'sgml-mode-hook (emmet-mode))
+(add-hook 'html-mode-hook (emmet-mode))
+(add-hook 'xml-mode-hook (emmet-mode))
 (add-hook 'css-mode-hook (emmet-mode))
 
 (add-hook 'scala-mode-hook
@@ -452,10 +452,7 @@
  '(custom-safe-themes
    (quote
     ("3380a2766cf0590d50d6366c5a91e976bdc3c413df963a0ab9952314b4577299" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "9955cc54cc64d6c051616dce7050c1ba34efc2b0613d89a70a68328f34e22c8f" "7bef2d39bac784626f1635bd83693fae091f04ccac6b362e0405abf16a32230c" default)))
- '(global-linum-mode t)
- '(package-selected-packages
-   (quote
-    (quickrun git-gutter-fringe buffer-move zoom-frm elisp-format express Alert alert growl fancy-narrow fancy-battery gradle-mode gradle groovy-mode groovy zenburn-theme which-key web-mode use-package undo-tree solarized-theme smartparens rebecca-theme popup-imenu parinfer mvn multiple-cursors monokai-theme magithub magit-gitflow json-mode js2-mode highlight-symbol helm-swoop helm-projectile goto-chg flymake-jslint flycheck eslint-fix ensime engine-mode emojify emmet-mode editorconfig dracula-theme color-theme-sanityinc-tomorrow base16-theme arjen-grey-theme alchemist))))
+ '(global-linum-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
