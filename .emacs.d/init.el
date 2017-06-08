@@ -350,8 +350,11 @@
             (show-paren-mode)
             (smartparens-mode)
             (yas-minor-mode)
-            (setq prettify-symbols-alist 
-                  (remove-keys '("flatMap" "bind") scala-prettify-symbols-alist))
+            (setq prettify-symbols-alist
+                  (append '(("|>" . ?ᐅ)
+                            (">>>" . ?⫸)
+                            ("lambda" . ?λ))
+                          (remove-keys '("flatMap" "bind") scala-prettify-symbols-alist)))
             (prettify-symbols-mode)
             (bind-ensime-mvn-keys)
             (scala-mode:goto-start-of-code)))
