@@ -167,6 +167,15 @@
   :config (setq ensime-use-helm t)
   :pin melpa-stable)
 
+(use-package js2-mode)
+(use-package flycheck)
+(use-package json-mode)
+(use-package web-mode)
+(use-package exec-path-from-shell)
+(use-package react-snippets)
+(use-package yaml-mode)
+(use-package flycheck-yamllint)
+
 (use-package helm-swoop
   :after helm)
 ;; Change the keybinds to whatever you like :)
@@ -296,6 +305,12 @@
 
 (use-package alchemist)
 
+(use-package tramp)
+
+(use-package docker)
+(use-package docker-tramp)
+(use-package dockerfile-mode)
+
 (use-package git-gutter-fringe
   :config 
   (global-git-gutter-mode)
@@ -424,6 +439,7 @@
 (setq compilation-save-buffers-predicate '(lambda () nil))
 
 (add-hook 'shell-mode-hook 'compilation-shell-minor-mode)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
