@@ -27,6 +27,7 @@
 
 ;; font settings
 (set-face-attribute 'default nil :font "Source Code Pro") 
+;; (set-face-attribute 'default nil :font "Hack")
 
 ;; modes
 (electric-indent-mode 0)
@@ -184,7 +185,6 @@
 ;; Instead of helm-multi-swoop-all, you can also use helm-multi-swoop-current-mode
 (define-key helm-swoop-map (kbd "M-m") 'helm-multi-swoop-current-mode-from-helm-swoop)
 
-
 (require 'ensime-mvn)
 (setq ensime-mvn-regen-task "'org.ensime.maven.plugins:ensime-maven:0.0.5:generate' -U")
 (setq ensime-mvn-verify-task "clean verify -e -U")
@@ -244,6 +244,8 @@
   (setq gradle-use-gradlew t
         gradle-gradlew-executable "./gradlew"))
 
+(use-package yaml-mode)
+
 (use-package flymake)
 (use-package flymake-jslint)
 (use-package web-mode)
@@ -282,6 +284,21 @@
 
   (bind-key "s-<delete>" 'sp-kill-sexp smartparens-mode-map)
   (bind-key "s-<backspace>" 'sp-backward-kill-sexp smartparens-mode-map))
+
+(sp-local-pair 'scala-mode "(" nil :post-handlers '(("||\n[i]" "RET")))
+(sp-local-pair 'scala-mode "{" nil :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
+
+(defun sp-restrict-c (sym)
+  "Smartparens restriction on `SYM' for C-derived parenthesis."
+  (sp-restrict-to-pairs-interactive "{([" sym))
+
+;; (bind-key "RET" 'scala-mode-newline-comments scala-mode-map)
+;; (bind-key "s-<delete>" (sp-restrict-c 'sp-kill-sexp) scala-mode-map)
+;; (bind-key "s-<backspace>" (sp-restrict-c 'sp-backward-kill-sexp) scala-mode-map)
+;; (bind-key "s-<home>" (sp-restrict-c 'sp-beginning-of-sexp) scala-mode-map)
+;; (bind-key "s-<end>" (sp-restrict-c 'sp-end-of-sexp) scala-mode-map)
+
+(bind-key "s-{" 'sp-rewrap-sexp smartparens-mode-map)
 
 (use-package editorconfig
   :ensure t
@@ -353,8 +370,11 @@
             (setq prettify-symbols-alist
                   (append '(("|>" . ?ᐅ)
                             (">>>" . ?⫸)
-                            ("lambda" . ?λ))
+                            ("lambda" . ?λ)
+                            ("|@|" . ?⊛))
                           (remove-keys '("flatMap" "bind") scala-prettify-symbols-alist)))
+            (company-mode)
+            (ensime-mode)
             (prettify-symbols-mode)
             (bind-ensime-mvn-keys)
             (scala-mode:goto-start-of-code)))
@@ -437,7 +457,7 @@
  '(global-linum-mode t)
  '(package-selected-packages
    (quote
-    (dirtree minimap ox-beamer ox-twbs ox-reveal org-reveal org-mode-reveal w3 git-gutter-fringe-plus quickrun git-gutter-fringe buffer-move zoom-frm elisp-format express Alert alert growl fancy-narrow fancy-battery gradle-mode gradle groovy-mode groovy zenburn-theme which-key web-mode use-package undo-tree solarized-theme smartparens rebecca-theme popup-imenu parinfer mvn multiple-cursors monokai-theme magithub magit-gitflow json-mode js2-mode highlight-symbol helm-swoop helm-projectile goto-chg flymake-jslint flycheck eslint-fix ensime engine-mode emojify emmet-mode editorconfig dracula-theme color-theme-sanityinc-tomorrow base16-theme arjen-grey-theme alchemist))))
+    (yaml-mode dirtree minimap ox-beamer ox-twbs ox-reveal org-reveal org-mode-reveal w3 git-gutter-fringe-plus quickrun git-gutter-fringe buffer-move zoom-frm elisp-format express Alert alert growl fancy-narrow fancy-battery gradle-mode gradle groovy-mode groovy zenburn-theme which-key web-mode use-package undo-tree solarized-theme smartparens rebecca-theme popup-imenu parinfer mvn multiple-cursors monokai-theme magithub magit-gitflow json-mode js2-mode highlight-symbol helm-swoop helm-projectile goto-chg flymake-jslint flycheck eslint-fix ensime engine-mode emojify emmet-mode editorconfig dracula-theme color-theme-sanityinc-tomorrow base16-theme arjen-grey-theme alchemist))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
