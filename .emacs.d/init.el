@@ -168,6 +168,20 @@
   :config (setq ensime-use-helm t)
   :pin melpa-stable)
 
+(use-package js2-mode)
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+(use-package json-mode)
+(use-package web-mode)
+(use-package exec-path-from-shell)
+(use-package react-snippets)
+(use-package yaml-mode)
+(use-package flycheck-yamllint)
+
+(add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
+
+
 (use-package helm-swoop
   :after helm)
 ;; Change the keybinds to whatever you like :)
@@ -252,6 +266,12 @@
 (use-package js2-mode)
 (use-package json-mode)
 
+(use-package tern)
+(use-package auto-complete)
+(use-package tern-auto-complete
+  :after tern 
+  :init (tern-ac-setup))
+
 (bind-key "C-x C-g" 'goto-line)
 
 ;; Mac keybindings
@@ -305,13 +325,70 @@
   :init
   (add-hook 'prog-mode-hook (editorconfig-mode 1))
   (add-hook 'text-mode-hook (editorconfig-mode 1))
+  (add-hook 'js-mode-hook (editorconfig-mode 1))
   (add-hook 'editorconfig-mode-hook
             (add-hook 'before-save-hook
                       (lambda () (if indent-tabs-mode
                                      (tabify (point-min) (point-max))
                                    (untabify (point-min) (point-max)))))))
 
+;; disable jshint since we prefer eslint checking
+(setq-default flycheck-disabled-checkers
+              (append flycheck-disabled-checkers
+                      '(javascript-jshint)))
+
+;; use eslint with web-mode for jsx files
+(flycheck-add-mode 'javascript-eslint 'web-mode)
+
+;; customize flycheck temp file prefix
+(setq-default flycheck-temp-prefix ".flycheck")
+
+;; disable json-jsonlist checking for json files
+(setq-default flycheck-disabled-checkers
+  (append flycheck-disabled-checkers
+    '(json-jsonlist)))
+
+;; https://github.com/purcell/exec-path-from-shell
+;; only need exec-path-from-shell on OSX
+;; this hopefully sets up path and other vars better
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
+
+(defun my/use-eslint-from-node-modules ()
+  (let* ((root (locate-dominating-file
+                (or (buffer-file-name) default-directory)
+                "node_modules"))
+         (eslint (and root
+                      (expand-file-name "node_modules/eslint/bin/eslint.js"
+                                        root))))
+    (when (and eslint (file-executable-p eslint))
+      (setq-local flycheck-javascript-eslint-executable eslint))))
+(add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
+
+;; adjust indents for web-mode to 2 spaces
+(defun my-web-mode-hook ()
+  "Hooks for Web mode. Adjust indents"
+  ;;; http://web-mode.org/
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-code-indent-offset 2))
+(add-hook 'web-mode-hook  'my-web-mode-hook)
+
+;; for better jsx syntax-highlighting in web-mode
+;; - courtesy of Patrick @halbtuerke
+(defadvice web-mode-highlight-part (around tweak-jsx activate)
+  (if (equal web-mode-content-type "jsx")
+    (let ((web-mode-enable-part-face nil))
+      ad-do-it)
+    ad-do-it))
+
 (use-package alchemist)
+
+(use-package tramp)
+
+(use-package docker)
+(use-package docker-tramp)
+(use-package dockerfile-mode)
 
 (use-package git-gutter-fringe
   :config 
@@ -360,6 +437,7 @@
 (add-hook 'html-mode-hook (emmet-mode))
 (add-hook 'xml-mode-hook (emmet-mode))
 (add-hook 'css-mode-hook (emmet-mode))
+(add-hook 'js-mode-hook (lambda () (tern-mode t) (auto-complete-mode 1)))
 
 (add-hook 'scala-mode-hook
           (lambda ()
@@ -388,6 +466,8 @@
           (lambda ()
             (bind-ensime-mvn-keys)
             (emmet-mode)))
+
+
 
 
 ;; This stuff is to ansi-colorize the compilation buffer after a rails test so the terminal colors come through.
@@ -444,6 +524,7 @@
 (setq compilation-save-buffers-predicate '(lambda () nil))
 
 (add-hook 'shell-mode-hook 'compilation-shell-minor-mode)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -451,13 +532,13 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("3380a2766cf0590d50d6366c5a91e976bdc3c413df963a0ab9952314b4577299" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "9955cc54cc64d6c051616dce7050c1ba34efc2b0613d89a70a68328f34e22c8f" "7bef2d39bac784626f1635bd83693fae091f04ccac6b362e0405abf16a32230c" default)))
+    ("cea3ec09c821b7eaf235882e6555c3ffa2fd23de92459751e18f26ad035d2142" "3380a2766cf0590d50d6366c5a91e976bdc3c413df963a0ab9952314b4577299" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "9955cc54cc64d6c051616dce7050c1ba34efc2b0613d89a70a68328f34e22c8f" "7bef2d39bac784626f1635bd83693fae091f04ccac6b362e0405abf16a32230c" default)))
  '(ensime-auto-connect (quote always))
  '(ensime-mode-key-prefix [3])
  '(global-linum-mode t)
  '(package-selected-packages
    (quote
-    (yaml-mode dirtree minimap ox-beamer ox-twbs ox-reveal org-reveal org-mode-reveal w3 git-gutter-fringe-plus quickrun git-gutter-fringe buffer-move zoom-frm elisp-format express Alert alert growl fancy-narrow fancy-battery gradle-mode gradle groovy-mode groovy zenburn-theme which-key web-mode use-package undo-tree solarized-theme smartparens rebecca-theme popup-imenu parinfer mvn multiple-cursors monokai-theme magithub magit-gitflow json-mode js2-mode highlight-symbol helm-swoop helm-projectile goto-chg flymake-jslint flycheck eslint-fix ensime engine-mode emojify emmet-mode editorconfig dracula-theme color-theme-sanityinc-tomorrow base16-theme arjen-grey-theme alchemist))))
+    (yaml-mode tern-auto-complete tern eslintd-fix eslint dirtree minimap ox-beamer ox-twbs ox-reveal org-reveal org-mode-reveal w3 git-gutter-fringe-plus quickrun git-gutter-fringe buffer-move zoom-frm elisp-format express Alert alert growl fancy-narrow fancy-battery gradle-mode gradle groovy-mode groovy zenburn-theme which-key web-mode use-package undo-tree solarized-theme smartparens rebecca-theme popup-imenu parinfer mvn multiple-cursors monokai-theme magithub magit-gitflow json-mode js2-mode highlight-symbol helm-swoop helm-projectile goto-chg flymake-jslint flycheck eslint-fix ensime engine-mode emojify emmet-mode editorconfig dracula-theme color-theme-sanityinc-tomorrow base16-theme arjen-grey-theme alchemist))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
